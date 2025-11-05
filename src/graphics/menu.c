@@ -1,5 +1,10 @@
 #include "menu.h"
 
+/**
+ * @file menu.c
+ * @brief Implementation of menu and menu bar UI elements.
+ */
+
 #include "core/calc.h"
 #include "graphics/graphics.h"
 #include "graphics/lang_text.h"
@@ -29,6 +34,13 @@ int menu_bar_draw(menu_bar_item *items, int num_items, int max_width)
     return x_offset;
 }
 
+/**
+ * @brief Gets the menu bar item at a given position.
+ * @param m A pointer to the mouse state.
+ * @param items A pointer to the array of menu bar items.
+ * @param num_items The number of items in the menu bar.
+ * @return The ID of the menu bar item at the given position, or 0 if no item is at the position.
+ */
 static int get_menu_bar_item(const mouse *m, menu_bar_item *items, int num_items)
 {
     for (int i = 0; i < num_items; i++) {
@@ -51,6 +63,10 @@ int menu_bar_handle_mouse(const mouse *m, menu_bar_item *items, int num_items, i
     return menu_id;
 }
 
+/**
+ * @brief Calculates the dimensions of a menu.
+ * @param menu A pointer to the menu.
+ */
 static void calculate_menu_dimensions(menu_bar_item *menu)
 {
     int max_width = 0;
@@ -92,6 +108,12 @@ void menu_draw(menu_bar_item *menu, int focus_item_id)
     }
 }
 
+/**
+ * @brief Gets the menu item at a given position.
+ * @param m A pointer to the mouse state.
+ * @param menu A pointer to the menu.
+ * @return The ID of the menu item at the given position, or 0 if no item is at the position.
+ */
 static int get_menu_item(const mouse *m, menu_bar_item *menu)
 {
     int y_offset = TOP_MENU_HEIGHT + MENU_BASE_TEXT_Y_OFFSET * 2;

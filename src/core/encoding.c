@@ -1,5 +1,10 @@
 #include "core/encoding.h"
 
+/**
+ * @file encoding.c
+ * @brief Implementation of the text encoding and conversion functions.
+ */
+
 #include "core/encoding_japanese.h"
 #include "core/encoding_korean.h"
 #include "core/encoding_simp_chinese.h"
@@ -11,17 +16,23 @@
 
 #define HIGH_CHAR_COUNT 128
 
+/**
+ * @brief Represents a mapping between an internal character code and its UTF-8 representation.
+ */
 typedef struct {
-    uint8_t internal_value;
-    int bytes;
-    uint8_t utf8_value[3];
-    int bytes_decomposed;
-    uint8_t utf8_decomposed[4];
+    uint8_t internal_value; /**< The internal character code. */
+    int bytes; /**< The number of bytes in the UTF-8 representation. */
+    uint8_t utf8_value[3]; /**< The UTF-8 representation. */
+    int bytes_decomposed; /**< The number of bytes in the decomposed UTF-8 representation. */
+    uint8_t utf8_decomposed[4]; /**< The decomposed UTF-8 representation. */
 } letter_code;
 
+/**
+ * @brief Represents a lookup table for converting from UTF-8 to an internal character code.
+ */
 typedef struct {
-    uint32_t utf8;
-    const letter_code *code;
+    uint32_t utf8; /**< The UTF-8 character code. */
+    const letter_code *code; /**< A pointer to the corresponding letter_code. */
 } from_utf8_lookup;
 
 static const letter_code HIGH_TO_UTF8_DEFAULT[HIGH_CHAR_COUNT] = {
@@ -689,6 +700,12 @@ static struct {
     int decomposed_table_size;
 } data;
 
+/**
+ * @brief Calculates the 32-bit integer value of a UTF-8 character.
+ * @param bytes A pointer to the bytes of the UTF-8 character.
+ * @param length The number of bytes in the character.
+ * @return The 32-bit integer value of the character.
+ */
 static uint32_t calculate_utf8_value(const uint8_t *bytes, int length)
 {
     uint32_t value = 0;
@@ -707,6 +724,14 @@ static uint32_t calculate_utf8_value(const uint8_t *bytes, int length)
     return value;
 }
 
+/**
+ * @brief Compares two from_utf8_lookup structs for sorting.
+ * @param a A pointer to the first struct.
+ * @param b A pointer to the second struct.
+ * @return An integer less than, equal to, or greater than zero if the first
+ *         argument is considered to be respectively less than, equal to, or
+ *         greater than the second.
+ */
 static int compare_utf8_lookup(const void *a, const void *b)
 {
     uint32_t va = ((const from_utf8_lookup*) a)->utf8;
@@ -714,6 +739,9 @@ static int compare_utf8_lookup(const void *a, const void *b)
     return va == vb ? 0 : (va < vb ? -1 : 1);
 }
 
+/**
+ * @brief Builds the reverse lookup table for converting from UTF-8 to the internal encoding.
+ */
 static void build_reverse_lookup_table(void)
 {
     if (!data.to_utf8_table) {
@@ -729,6 +757,9 @@ static void build_reverse_lookup_table(void)
     qsort(data.from_utf8_table, data.utf8_table_size, sizeof(from_utf8_lookup), compare_utf8_lookup);
 }
 
+/**
+ * @brief Builds the reverse lookup table for converting from decomposed UTF-8 to the internal encoding.
+ */
 static void build_decomposed_lookup_table(void)
 {
     if (!data.to_utf8_table) {
@@ -749,6 +780,11 @@ static void build_decomposed_lookup_table(void)
     qsort(data.from_utf8_decomposed_table, data.decomposed_table_size, sizeof(from_utf8_lookup), compare_utf8_lookup);
 }
 
+/**
+ * @brief Gets the letter_code for an internal character code.
+ * @param c The internal character code.
+ * @return A pointer to the corresponding letter_code, or NULL if not found.
+ */
 static const letter_code *get_letter_code_for_internal(uint8_t c)
 {
     if (c < 0x80 || !data.to_utf8_table) {
@@ -757,6 +793,12 @@ static const letter_code *get_letter_code_for_internal(uint8_t c)
     return &data.to_utf8_table[c - 0x80];
 }
 
+/**
+ * @brief Gets the UTF-8 character code and number of bytes for a character.
+ * @param c A pointer to the character.
+ * @param num_bytes A pointer to an integer to store the number of bytes.
+ * @return The UTF-8 character code.
+ */
 static int get_utf8_code(const char *c, int *num_bytes)
 {
     const uint8_t *uc = (const uint8_t *) c;
@@ -775,6 +817,12 @@ static int get_utf8_code(const char *c, int *num_bytes)
     }
 }
 
+/**
+ * @brief Checks if a character is a combining character.
+ * @param b1 The first byte of the character.
+ * @param b2 The second byte of the character.
+ * @return 1 if the character is a combining character, 0 otherwise.
+ */
 static int is_combining_char(uint8_t b1, uint8_t b2)
 {
     if (b1 == 0xcc && b2 >= 0x80) {
@@ -785,12 +833,26 @@ static int is_combining_char(uint8_t b1, uint8_t b2)
     return 0;
 }
 
+/**
+ * @brief Searches the UTF-8 lookup table for a character.
+ * @param key The character to search for.
+ * @param table The table to search in.
+ * @param size The size of the table.
+ * @return A pointer to the corresponding letter_code, or NULL if not found.
+ */
 static const letter_code *search_utf8_table(const from_utf8_lookup *key, const from_utf8_lookup *table, int size)
 {
     const from_utf8_lookup *result = bsearch(key, table, size, sizeof(from_utf8_lookup), compare_utf8_lookup);
     return result ? result->code : NULL;
 }
 
+/**
+ * @brief Gets the letter_code for a UTF-8 character.
+ * @param c A pointer to the character.
+ * @param num_bytes A pointer to an integer to store the number of bytes.
+ * @param is_accent A pointer to an integer to store whether the character is an accent.
+ * @return A pointer to the corresponding letter_code, or NULL if not found.
+ */
 static const letter_code *get_letter_code_for_utf8(const char *c, int *num_bytes, int *is_accent)
 {
     static letter_code single_char = {0, 1};
@@ -836,6 +898,12 @@ static const letter_code *get_letter_code_for_utf8(const char *c, int *num_bytes
     return search_utf8_table(&key, data.from_utf8_table, data.utf8_table_size);
 }
 
+/**
+ * @brief Gets the letter_code for a combining UTF-8 character.
+ * @param prev_char A pointer to the previous character.
+ * @param combining_char A pointer to the combining character.
+ * @return A pointer to the corresponding letter_code, or NULL if not found.
+ */
 static const letter_code *get_letter_code_for_combining_utf8(const char *prev_char, const char *combining_char)
 {
     int prev_bytes, comb_bytes;
@@ -918,6 +986,11 @@ int encoding_system_uses_decomposed(void)
 #endif
 }
 
+/**
+ * @brief Checks if a UTF-8 character is an ASCII character.
+ * @param utf8_char A pointer to the character.
+ * @return 1 if the character is ASCII, 0 otherwise.
+ */
 static int is_ascii(const char *utf8_char)
 {
     return ((uint8_t) *utf8_char & 0x80) == 0;

@@ -1,5 +1,10 @@
 #include "renderer.h"
 
+/**
+ * @file renderer.c
+ * @brief Implementation of the graphics renderer interface.
+ */
+
 static const graphics_renderer_interface *renderer;
 
 const graphics_renderer_interface *graphics_renderer(void)

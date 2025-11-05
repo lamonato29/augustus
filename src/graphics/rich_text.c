@@ -1,5 +1,10 @@
 #include "rich_text.h"
 
+/**
+ * @file rich_text.c
+ * @brief Implementation of the rich text rendering functions.
+ */
+
 #include "assets/assets.h"
 #include "core/calc.h"
 #include "core/file.h"
@@ -21,6 +26,9 @@
 #define MAX_LINKS 50
 #define TEMP_LINE_SIZE 200
 
+/**
+ * @brief Callback function for when the rich text is scrolled.
+ */
 static void on_scroll(void);
 
 static scrollbar_type scrollbar = {
@@ -130,6 +138,13 @@ int rich_text_get_clicked_link(const mouse *m)
     return -1;
 }
 
+/**
+ * @brief Adds a link to the internal links table.
+ * @param message_id The ID of the message to link to.
+ * @param x_start The starting x-coordinate of the link.
+ * @param x_end The ending x-coordinate of the link.
+ * @param y The y-coordinate of the link.
+ */
 static void add_link(int message_id, int x_start, int x_end, int y)
 {
     if (data.num_links < MAX_LINKS) {
@@ -142,6 +157,15 @@ static void add_link(int message_id, int x_start, int x_end, int y)
     }
 }
 
+/**
+ * @brief Gets the width of a word.
+ * @param str A pointer to the string containing the word.
+ * @param def A pointer to the font definition.
+ * @param in_link A flag indicating if the word is a link.
+ * @param num_chars A pointer to an integer to store the number of characters in the word.
+ * @param line_start A flag indicating if the word is at the start of a line.
+ * @return The width of the word.
+ */
 static int get_word_width(const uint8_t *str, const font_definition *def, int in_link, int *num_chars, int line_start)
 {
     int width = 0;
@@ -198,6 +222,15 @@ static int get_word_width(const uint8_t *str, const font_definition *def, int in
     return width;
 }
 
+/**
+ * @brief Draws a line of text.
+ * @param str A pointer to the string to draw.
+ * @param font A pointer to the font definition.
+ * @param x The x-coordinate to draw the text at.
+ * @param y The y-coordinate to draw the text at.
+ * @param color The color of the text.
+ * @param measure_only A flag indicating if the text should only be measured and not drawn.
+ */
 static void draw_line(const uint8_t *str, const font_definition *font, int x, int y, color_t color, int measure_only)
 {
     int start_link = 0;
@@ -242,6 +275,11 @@ static void draw_line(const uint8_t *str, const font_definition *font, int x, in
     }
 }
 
+/**
+ * @brief Gets the width of a raw text string.
+ * @param str A pointer to the string.
+ * @return The width of the string.
+ */
 static int get_raw_text_width(const uint8_t *str)
 {
     int width = 0;
@@ -257,6 +295,11 @@ static int get_raw_text_width(const uint8_t *str)
     return width;
 }
 
+/**
+ * @brief Gets the ID of an external image.
+ * @param filename The filename of the image.
+ * @return The ID of the image, or 0 if the image was not found.
+ */
 static int get_external_image_id(const char *filename)
 {
     char full_path[FILE_NAME_MAX];
@@ -347,6 +390,17 @@ int rich_text_parse_image_id(const uint8_t **position, int default_image_group, 
     return image_id;
 }
 
+/**
+ * @brief Draws rich text, handling wrapping, formatting, and images.
+ * @param text The text to draw.
+ * @param x_offset The x-coordinate to draw the text at.
+ * @param y_offset The y-coordinate to draw the text at.
+ * @param box_width The width of the bounding box.
+ * @param height_lines The number of available lines.
+ * @param color The color of the text.
+ * @param measure_only A flag indicating if the text should only be measured and not drawn.
+ * @return The total number of lines required for the text.
+ */
 static int draw_text(const uint8_t *text, int x_offset, int y_offset,
                      int box_width, unsigned int height_lines, color_t color, int measure_only)
 {

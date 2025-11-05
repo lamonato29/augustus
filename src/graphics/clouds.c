@@ -1,5 +1,10 @@
 #include "clouds.h"
 
+/**
+ * @file clouds.c
+ * @brief Implementation of the cloud drawing functions.
+ */
+
 #include "core/config.h"
 #include "core/image.h"
 #include "core/random.h"
@@ -35,38 +40,47 @@
 
 #define PI 3.14159265358979323846
 
+/**
+ * @brief An enumeration of cloud statuses.
+ */
 typedef enum {
-    STATUS_INACTIVE,
-    STATUS_CREATED,
-    STATUS_MOVING
+    STATUS_INACTIVE, /**< The cloud is inactive and not visible. */
+    STATUS_CREATED, /**< The cloud has been created but is not yet moving. */
+    STATUS_MOVING /**< The cloud is moving across the screen. */
 } cloud_status;
 
+/**
+ * @brief Represents an ellipse used to draw a cloud.
+ */
 typedef struct {
-    int x;
-    int y;
-    int width;
-    int height;
-    int half_width;
-    int half_height;
-    int radius;
-    int squared_width;
-    int squared_height;
-    int width_times_height;
+    int x; /**< The x-coordinate of the center of the ellipse. */
+    int y; /**< The y-coordinate of the center of the ellipse. */
+    int width; /**< The width of the ellipse. */
+    int height; /**< The height of the ellipse. */
+    int half_width; /**< Half the width of the ellipse. */
+    int half_height; /**< Half the height of the ellipse. */
+    int radius; /**< The radius of the ellipse. */
+    int squared_width; /**< The squared width of the ellipse. */
+    int squared_height; /**< The squared height of the ellipse. */
+    int width_times_height; /**< The width of the ellipse multiplied by the height. */
 } ellipse;
 
+/**
+ * @brief Represents a single cloud.
+ */
 typedef struct {
-    image img;
-    int x;
-    int y;
-    cloud_status status;
+    image img; /**< The image of the cloud. */
+    int x; /**< The x-coordinate of the cloud. */
+    int y; /**< The y-coordinate of the cloud. */
+    cloud_status status; /**< The status of the cloud. */
     struct {
-        speed_type x;
-        speed_type y;
-    } speed;
-    float scale_x;
-    float scale_y;
-    int side;
-    int angle;
+        speed_type x; /**< The x-speed of the cloud. */
+        speed_type y; /**< The y-speed of the cloud. */
+    } speed; /**< The speed of the cloud. */
+    float scale_x; /**< The x-scale of the cloud. */
+    float scale_y; /**< The y-scale of the cloud. */
+    int side; /**< The side of the cloud. */
+    int angle; /**< The angle of the cloud. */
 } cloud_type;
 
 static struct {
@@ -75,11 +89,23 @@ static struct {
     int pause_frames;
 } data;
 
+/**
+ * @brief Generates a random number in a given range.
+ * @param min The minimum value.
+ * @param range The range.
+ * @return A random number in the given range.
+ */
 static int random_from_min_to_range(int min, int range)
 {
     return min + random_between_from_stdlib(0, range);
 }
 
+/**
+ * @brief Positions an ellipse within a cloud.
+ * @param e A pointer to the ellipse to position.
+ * @param cloud_width The width of the cloud.
+ * @param cloud_height The height of the cloud.
+ */
 static void position_ellipse(ellipse *e, int cloud_width, int cloud_height)
 {
     double angle = random_fractional_from_stdlib() * PI * 2;
@@ -99,6 +125,11 @@ static void position_ellipse(ellipse *e, int cloud_width, int cloud_height)
     e->radius = e->half_width > e->half_height ? e->half_width : e->half_height;
 }
 
+/**
+ * @brief Checks if an ellipse is inside the bounds of a cloud.
+ * @param e A pointer to the ellipse to check.
+ * @return 1 if the ellipse is inside the bounds, 0 otherwise.
+ */
 static int ellipse_is_inside_bounds(const ellipse *e)
 {
     int x = e->x;
@@ -107,6 +138,12 @@ static int ellipse_is_inside_bounds(const ellipse *e)
         y - e->height >= 0 && y + e->height < CLOUD_HEIGHT;
 }
 
+/**
+ * @brief Darkens a pixel in a cloud.
+ * @param cloud A pointer to the cloud's pixel data.
+ * @param x The x-coordinate of the pixel.
+ * @param y The y-coordinate of the pixel.
+ */
 static void darken_pixel(color_t *cloud, int x, int y)
 {
     int pixel = y * CLOUD_WIDTH + x;
@@ -123,6 +160,12 @@ static void darken_pixel(color_t *cloud, int x, int y)
     cloud[pixel] = ALPHA_TRANSPARENT | (alpha << COLOR_BITSHIFT_ALPHA);
 }
 
+/**
+ * @brief Generates a cloud ellipse.
+ * @param cloud A pointer to the cloud's pixel data.
+ * @param width The width of the cloud.
+ * @param height The height of the cloud.
+ */
 static void generate_cloud_ellipse(color_t *cloud, int width, int height)
 {
     ellipse e;
@@ -163,6 +206,9 @@ static void generate_cloud_ellipse(color_t *cloud, int width, int height)
     }
 }
 
+/**
+ * @brief Initializes the cloud images.
+ */
 static void init_cloud_images(void)
 {
     graphics_renderer()->create_custom_image(CUSTOM_IMAGE_CLOUDS, CLOUD_TEXTURE_WIDTH, CLOUD_TEXTURE_HEIGHT, 0);
@@ -184,6 +230,10 @@ static void init_cloud_images(void)
     }
 }
 
+/**
+ * @brief Generates a new cloud.
+ * @param cloud A pointer to the cloud to generate.
+ */
 static void generate_cloud(cloud_type *cloud)
 {
     if (!graphics_renderer()->has_custom_image(CUSTOM_IMAGE_CLOUDS)) {
@@ -216,6 +266,11 @@ static void generate_cloud(cloud_type *cloud)
     cloud->status = STATUS_CREATED;
 }
 
+/**
+ * @brief Checks if a cloud intersects with any other moving clouds.
+ * @param cloud A pointer to the cloud to check.
+ * @return 1 if the cloud intersects with another cloud, 0 otherwise.
+ */
 static int cloud_intersects(const cloud_type *cloud)
 {
     for (int i = 0; i < NUM_CLOUDS; i++) {
@@ -231,6 +286,12 @@ static int cloud_intersects(const cloud_type *cloud)
     return 0;
 }
 
+/**
+ * @brief Positions a cloud on the screen.
+ * @param cloud A pointer to the cloud to position.
+ * @param x_limit The x-limit of the screen.
+ * @param y_limit The y-limit of the screen.
+ */
 static void position_cloud(cloud_type *cloud, int x_limit, int y_limit)
 {
     int offset_x = random_between_from_stdlib(0, x_limit / 2);

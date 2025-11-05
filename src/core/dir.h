@@ -7,19 +7,25 @@
 #define CAMPAIGNS_DIRECTORY "***" CAMPAIGNS_DIR_NAME "***"
 
 /**
- * @file
- * Directory-related functions.
+ * @file dir.h
+ * @brief Provides functions for interacting with the file system.
  */
 
+/**
+ * @brief An enumeration of localization options.
+ */
 enum {
-    NOT_LOCALIZED = 0,
-    MAY_BE_LOCALIZED = 1,
-    MUST_BE_LOCALIZED = 2
+    NOT_LOCALIZED = 0, /**< The file is not localized. */
+    MAY_BE_LOCALIZED = 1, /**< The file may be localized. */
+    MUST_BE_LOCALIZED = 2 /**< The file must be localized. */
 };
 
+/**
+ * @brief An enumeration of path locations.
+ */
 enum {
-    PATH_LOCATION_ROOT = 0,
-    PATH_LOCATION_CONFIG = 1,
+    PATH_LOCATION_ROOT = 0, /**< The root directory of the game. */
+    PATH_LOCATION_CONFIG = 1, /**< The configuration directory. */
     PATH_LOCATION_ASSET = 2,
     PATH_LOCATION_SAVEGAME = 3,
     PATH_LOCATION_SCENARIO = 4,
@@ -33,79 +39,79 @@ enum {
 };
 
 /**
- * File information
+ * @brief Represents a single entry in a directory listing.
  */
 typedef struct {
-    char *name; /**< Filenames in UTF-8 encoding */
-    unsigned int modified_time; /**< Timestamp */
+    char *name; /**< The name of the file, encoded in UTF-8. */
+    unsigned int modified_time; /**< The last modification time of the file. */
 } dir_entry;
 
 /**
- * Directory listing
+ * @brief Represents a listing of files in a directory.
  */
 typedef struct {
-    dir_entry *files; /**< Filenames and last modified time */
-    int num_files; /**< Number of files in the list */
+    dir_entry *files; /**< An array of directory entries. */
+    int num_files; /**< The number of files in the listing. */
 } dir_listing;
 
 /**
- * Finds files with the given extension
- * @param dir The directory to search on, or null if base directory
- * @param extension Extension of the files to find
- * @return Directory listing
+ * @brief Finds all files with a given extension in a directory.
+ * @param dir The directory to search in.
+ * @param extension The file extension to search for.
+ * @return A directory listing of the found files.
  */
 const dir_listing *dir_find_files_with_extension(const char *dir, const char *extension);
 
 /**
- * Finds files with the given extension at the requested location ID
- * @param location The location ID where the files should reside
- * @param extension Extension of the files to find
- * @return Directory listing
+ * @brief Finds all files with a given extension in a specific location.
+ * @param location The location to search in.
+ * @param extension The file extension to search for.
+ * @return A directory listing of the found files.
  */
 const dir_listing *dir_find_files_with_extension_at_location(int location, const char *extension);
 
 /**
- * Appends files with the given extension to the current directory listing
- * @param extension Extension of the files to find
- * @return Directory listing
+ * @brief Appends all files with a given extension to the current directory listing.
+ * @param extension The file extension to search for.
+ * @return The updated directory listing.
  */
 const dir_listing *dir_append_files_with_extension(const char *extension);
 
 /**
- * Finds all subdirectories
- * @param dir The directory to search on, or null if base directory
- * @return Directory listing
+ * @brief Finds all subdirectories in a directory.
+ * @param dir The directory to search in.
+ * @return A directory listing of the found subdirectories.
  */
 const dir_listing *dir_find_all_subdirectories(const char *dir);
 
 /**
- * Finds all subdirectories at the requested location ID
- * @param location The location ID where the subdirectories should reside
- * @return Directory listing
+ * @brief Finds all subdirectories in a specific location.
+ * @param location The location to search in.
+ * @return A directory listing of the found subdirectories.
  */
 const dir_listing *dir_find_all_subdirectories_at_location(int location);
 
 /**
- * Get the case sensitive and localized filename of the file
- * @param filepath File path to match to a case-sensitive file on the filesystem
- * @param localizable Whether the file may, must or must not be localized
- * @return Corrected file, or NULL if the file was not found
+ * @brief Gets the case-sensitive and localized filename of a file.
+ * @param filepath The file path to match.
+ * @param localizable Whether the file is localizable.
+ * @return The corrected file path, or NULL if the file was not found.
  */
 const char *dir_get_file(const char *filepath, int localizable);
 
 /**
- * Get the case sensitive filename from the requested location ID
- * @param filepath File path to match to a case-sensitive file on the filesystem
- * @param location The location ID where the file should reside
- * @return Corrected file, or NULL if the file was not found
+ * @brief Gets the case-sensitive filename of a file in a specific location.
+ * @param filepath The file path to match.
+ * @param location The location to search in.
+ * @return The corrected file path, or NULL if the file was not found.
  */
 const char *dir_get_file_at_location(const char *filepath, int location);
 
 /**
- * Appends the location to the filename
- * @param filename File path to append the location to
- * @param location The location ID to append to the filename
- * @return Filename with location appended
+ * @brief Appends a location to a filename.
+ * @param filename The filename.
+ * @param location The location to append.
+ * @return The filename with the location appended.
  */
 const char *dir_append_location(const char *filename, int location);
 
