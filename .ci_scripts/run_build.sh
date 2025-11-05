@@ -76,9 +76,10 @@ case "$BUILD_TARGET" in
 	fi
 	echo "Running ./gradlew $COMMAND"
 	TERM=dumb ./gradlew $COMMAND
-	if [ -f augustus/build/outputs/apk/release/augustus-release.apk ]
+	if [ -f augustus/build/outputs/apk/$BUILDTYPE/augustus-$BUILDTYPE.apk ]
 	then
-		cp augustus/build/outputs/apk/release/augustus-release.apk ../build/augustus.apk
+		mkdir -p ../deploy
+		cp augustus/build/outputs/apk/$BUILDTYPE/augustus-$BUILDTYPE.apk ../deploy/augustus.apk
 	fi
 	cd ..
 	if [ ! -f "deps/SDL2-$BUILDTYPE.aar" ]
