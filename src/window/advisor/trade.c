@@ -56,11 +56,19 @@ static grid_box_type resource_grid = {
     .handle_tooltip = resource_item_tooltip
 };
 
+#include "window/trade_summary.h"
+
+static void button_summary(const generic_button *button)
+{
+    window_trade_summary_show();
+}
+
 static generic_button resource_buttons[] = {
     {375, 392, 200, 24, button_prices},
     {160, 392, 200, 24, button_empire},
     {45, 390, 40, 30, button_policy, 0, LAND_TRADE_POLICY},
-    {95, 390, 40, 30, button_policy, 0, SEA_TRADE_POLICY}
+    {95, 390, 40, 30, button_policy, 0, SEA_TRADE_POLICY},
+    {580, 392, 200, 24, button_summary}
 };
 
 static struct {
@@ -123,6 +131,9 @@ static int draw_background(void)
 
     button_border_draw(160, 392, 200, 24, data.focus_button_id == 2);
     lang_text_draw_centered(54, 30, 160, 398, 200, FONT_NORMAL_BLACK);
+
+    button_border_draw(580, 392, 200, 24, data.focus_button_id == 5);
+    lang_text_draw_centered(CUSTOM_TRANSLATION, TR_TRADE_SUMMARY_BUTTON, 580, 398, 200, FONT_NORMAL_BLACK);
 
     int land_policy_available = building_monument_working(BUILDING_CARAVANSERAI);
     int sea_policy_available = building_monument_working(BUILDING_LIGHTHOUSE);

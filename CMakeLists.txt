@@ -353,6 +353,7 @@ set(BUILDING_FILES
     ${PROJECT_SOURCE_DIR}/src/building/roadblock.c
     ${PROJECT_SOURCE_DIR}/src/building/rotation.c
     ${PROJECT_SOURCE_DIR}/src/building/state.c
+    ${PROJECT_SOURCE_DIR}/src/building/statistics.c
     ${PROJECT_SOURCE_DIR}/src/building/storage.c
     ${PROJECT_SOURCE_DIR}/src/building/tavern.c
     ${PROJECT_SOURCE_DIR}/src/building/temple.c
@@ -389,6 +390,7 @@ set(CITY_FILES
     ${PROJECT_SOURCE_DIR}/src/city/sound.c
     ${PROJECT_SOURCE_DIR}/src/city/trade.c
     ${PROJECT_SOURCE_DIR}/src/city/trade_policy.c
+    ${PROJECT_SOURCE_DIR}/src/city/trade_summary.c
     ${PROJECT_SOURCE_DIR}/src/city/victory.c
     ${PROJECT_SOURCE_DIR}/src/city/view.c
     ${PROJECT_SOURCE_DIR}/src/city/warning.c
@@ -648,6 +650,7 @@ set(WINDOW_FILES
     ${PROJECT_SOURCE_DIR}/src/window/building/house.c
     ${PROJECT_SOURCE_DIR}/src/window/building/industry.c
     ${PROJECT_SOURCE_DIR}/src/window/building/military.c
+    ${PROJECT_SOURCE_DIR}/src/window/building/stats.c
     ${PROJECT_SOURCE_DIR}/src/window/building/terrain.c
     ${PROJECT_SOURCE_DIR}/src/window/building/utility.c
     ${PROJECT_SOURCE_DIR}/src/window/editor/allowed_buildings.c
@@ -717,6 +720,7 @@ set(WINDOW_FILES
     ${PROJECT_SOURCE_DIR}/src/window/text_input.c
     ${PROJECT_SOURCE_DIR}/src/window/trade_opened.c
     ${PROJECT_SOURCE_DIR}/src/window/trade_prices.c
+    ${PROJECT_SOURCE_DIR}/src/window/trade_summary.c
     ${PROJECT_SOURCE_DIR}/src/window/user_path_setup.c
     ${PROJECT_SOURCE_DIR}/src/window/victory_dialog.c
     ${PROJECT_SOURCE_DIR}/src/window/video.c

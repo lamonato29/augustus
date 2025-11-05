@@ -1746,6 +1746,15 @@ static translation_string all_strings[] = {
     {TR_CONFIG_UI_CV_CURSOR_SHADOW, "Enable cursor shadow"},
     {TR_CONFIG_GENERAL_UNLOCK_MOUSE, "Lock mouse in Fullscreen mode"},
     {TR_CONFIG_GP_CH_HOUSING_PRE_MERGE_VACANT_LOTS, "Houses always merge in 2x2"},
+    {TR_STATISTICS, "Statistics"},
+    {TR_RENAME, "Rename"},
+    { TR_TRADE_SUMMARY_TITLE, "Trade Summary" },
+    { TR_TRADE_SUMMARY_BUTTON, "Trade Summary" },
+    { TR_RESOURCE, "Resource" },
+    { TR_UNITS_IMPORTED, "Units Imported" },
+    { TR_DENARII_IMPORTED, "Denarii Imported" },
+    { TR_UNITS_EXPORTED, "Units Exported" },
+    { TR_DENARII_EXPORTED, "Denarii Exported" },
 };
 
 void translation_english(const translation_string **strings, int *num_strings)

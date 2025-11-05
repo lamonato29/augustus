@@ -3,6 +3,7 @@
 #include "building/destruction.h"
 #include "building/model.h"
 #include "building/storage.h"
+#include "building/statistics.h"
 #include "building/warehouse.h"
 #include "city/finance.h"
 #include "city/map.h"
@@ -81,7 +82,7 @@ int building_granary_add_import(building *granary, int resource, int amount, int
     }
 
     int price = trade_price_buy(resource, land_trader);
-    city_finance_process_import(price * amount_added);
+    city_finance_process_import(resource, amount_added, price * amount_added);
     return amount_added;
 }
 
@@ -111,7 +112,7 @@ int building_granary_remove_export(building *granary, int resource, int amount, 
         return 0;
     }
     int price = trade_price_sell(resource, land_trader) * removed;
-    city_finance_process_export(price);
+    city_finance_process_export(resource, removed, price);
     return removed;
 }
 
@@ -139,6 +140,10 @@ int building_granary_try_add_resource(building *granary, int resource, int amoun
     } else {
         granary->resources[resource] += amount_added;
         granary->resources[RESOURCE_NONE] -= amount_added;
+    }
+
+    if (amount_added > 0) {
+        building_update_statistics(granary, resource, amount_added, 1);
     }
     return amount_added;
 }
@@ -175,6 +180,10 @@ int building_granary_try_remove_resource(building *granary, int resource, int de
     city_resource_remove_from_granary(resource, removed);
     granary->resources[resource] -= removed;
     granary->resources[RESOURCE_NONE] += removed;
+
+    if (removed > 0) {
+        building_update_statistics(granary, resource, removed, 0);
+    }
     return removed;
 }
 

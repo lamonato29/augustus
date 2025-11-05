@@ -14,6 +14,7 @@
 #include "figuretype/entertainer.h"
 #include "map/data.h"
 #include "map/terrain.h"
+#include "city/trade_summary.h"
 
 #define MAX_HOUSE_LEVELS 20
 
@@ -118,13 +119,14 @@ int city_finance_estimated_wages(void)
     return city_data.finance.estimated_wages;
 }
 
-void city_finance_process_import(int price)
+void city_finance_process_import(resource_type resource, int quantity, int price)
 {
     city_data.finance.treasury -= price;
     city_data.finance.this_year.expenses.imports += price;
+    trade_summary_process_import(resource, quantity, price);
 }
 
-void city_finance_process_export(int price)
+void city_finance_process_export(resource_type resource, int quantity, int price)
 {
     city_data.finance.treasury += price;
     city_data.finance.this_year.income.exports += price;
@@ -132,6 +134,7 @@ void city_finance_process_export(int price)
         city_data.finance.treasury += price / 2;
         city_data.finance.this_year.income.exports += price / 2;
     }
+    trade_summary_process_export(resource, quantity, price);
 }
 
 void city_finance_process_cheat(void)
@@ -545,6 +548,7 @@ void city_finance_handle_year_change(void)
     reset_taxes();
     copy_amounts_to_last_year();
     pay_tribute();
+    trade_summary_handle_year_change();
 }
 
 int city_finance_tourism_income_last_month(void)

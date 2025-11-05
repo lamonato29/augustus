@@ -2,6 +2,7 @@
 #define CITY_FINANCE_H
 
 #include "building/type.h"
+#include "game/resource.h"
 
 #define SMALL_TEMPLE_LEVY_MONTHLY 4
 #define FORT_LEVY_MONTHLY 8
@@ -51,9 +52,9 @@ int city_finance_estimated_tax_income(void);
 
 int city_finance_estimated_wages(void);
 
-void city_finance_process_import(int price);
+void city_finance_process_import(resource_type resource, int quantity, int price);
 
-void city_finance_process_export(int price);
+void city_finance_process_export(resource_type resource, int quantity, int price);
 
 void city_finance_process_cheat(void);
 
@@ -80,6 +81,8 @@ void city_finance_estimate_taxes(void);
 void city_finance_handle_month_change(void);
 
 void city_finance_handle_year_change(void);
+
+void trade_summary_handle_year_change(void);
 
 typedef struct {
     struct {
