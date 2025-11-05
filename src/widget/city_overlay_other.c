@@ -476,12 +476,8 @@ static int get_tooltip_depot_orders(tooltip_context *c, int grid_offset)
         building *b_src = building_get(depot_order.src_storage_id);
         building *b_dst = building_get(depot_order.dst_storage_id);
 
-        const uint8_t *src_type = lang_get_string(28, b_src->type);
-        const uint8_t *dst_type = lang_get_string(28, b_dst->type);
-        char src_info[64];
-        char dst_info[64];
-        snprintf(src_info, sizeof(src_info), "%s %d", (const char *) src_type, b_src->storage_id);
-        snprintf(dst_info, sizeof(dst_info), "%s %d", (const char *) dst_type, b_dst->storage_id);
+        const char *src_info = building_get_display_name(b_src);
+        const char *dst_info = building_get_display_name(b_dst);
         const uint8_t *direction_arrow = lang_get_string(CUSTOM_TRANSLATION, TR_TOOLTIP_DEPOT_ORDER_TO);
 
         snprintf((char *) result, sizeof(result),
@@ -1033,9 +1029,8 @@ static void draw_storage_ids(int x, int y, float scale, int grid_offset)
         !map_property_is_draw_tile(grid_offset)) {
         return;
     }
-    uint8_t number[10];
-    string_from_int(number, b->storage_id, 0);
-    int text_width = text_get_width(number, FONT_SMALL_PLAIN);
+    const char* displayName = building_get_display_name(b);
+    int text_width = text_get_width((uint8_t*)displayName, FONT_SMALL_PLAIN);
     int box_width = text_width + 10;
     int box_height = 22;
     if (b->type == BUILDING_GRANARY) {
@@ -1066,7 +1061,7 @@ static void draw_storage_ids(int x, int y, float scale, int grid_offset)
     y -= box_height / 2;
     graphics_draw_rect(x, y, box_width, box_height, COLOR_BLACK);
     graphics_fill_rect(x + 1, y + 1, box_width - 2, box_height - 2, COLOR_WHITE);
-    text_draw(number, x + 5, y + 6, FONT_SMALL_PLAIN, COLOR_BLACK);
+    text_draw((uint8_t*)displayName, x + 5, y + 6, FONT_SMALL_PLAIN, COLOR_BLACK);
 }
 
 const city_overlay *city_overlay_for_storages(void)

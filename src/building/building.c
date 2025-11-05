@@ -61,9 +61,24 @@ static struct {
     int unfixable_houses;
 } extra;
 
+#include "translation/translation.h"
+#include <stdio.h>
+
 building *building_get(int id)
 {
     return array_item(data.buildings, id);
+}
+
+const char *building_get_display_name(const building *b)
+{
+    if (b->nickname[0] != '\0') {
+        return b->nickname;
+    }
+
+    static char default_name[64];
+    const char *building_name = (const char *)lang_get_string(28, b->type);
+    snprintf(default_name, sizeof(default_name), "%s %d", building_name, b->storage_id);
+    return default_name;
 }
 int building_can_repair_type(building_type type)
 {
@@ -276,6 +291,8 @@ building *building_create(building_type type, int x, int y)
     b->figure_roam_direction = b->house_figure_generation_delay & 6;
     b->fire_proof = props->fire_proof;
     b->is_close_to_water = building_is_close_to_water(b);
+    b->stats = NULL;
+    b->nickname[0] = '\0';
 
     return b;
 }
@@ -301,8 +318,14 @@ static void building_delete(building *b)
     array_trim(data.buildings);
 }
 
+#include <stdlib.h>
+
 void building_clear_related_data(building *b)
 {
+    if (b->stats) {
+        free(b->stats);
+        b->stats = NULL;
+    }
     if (b->storage_id) {
         building_storage_delete(b->storage_id);
         b->storage_id = 0;

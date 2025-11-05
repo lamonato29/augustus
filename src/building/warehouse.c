@@ -7,6 +7,7 @@
 #include "building/monument.h"
 #include "building/model.h"
 #include "building/storage.h"
+#include "building/statistics.h"
 #include "city/finance.h"
 #include "city/resource.h"
 #include "core/calc.h"
@@ -200,6 +201,7 @@ int building_warehouse_try_add_resource(building *b, int resource, int quantity,
     }
 
     if (added) {
+        building_update_statistics(b, resource, added, 1);
         tutorial_on_add_to_warehouse();
     }
     return added;
@@ -258,6 +260,9 @@ int building_warehouse_try_remove_resource(building *warehouse, int resource, in
             space->subtype.warehouse_resource_id = RESOURCE_NONE;
         }
         building_warehouse_space_set_image(space, resource);
+    }
+    if (removed_amount > 0) {
+        building_update_statistics(warehouse, resource, removed_amount, 0);
     }
     return removed_amount;
 }
@@ -322,7 +327,7 @@ int building_warehouse_add_import(building *warehouse, int resource, int amount,
         return 0; // no space to add
     }
     int price = trade_price_buy(resource, land_trader);
-    city_finance_process_import(price * added_amount);
+    city_finance_process_import(resource, added_amount, price * added_amount);
     return 1;
 }
 
@@ -357,7 +362,7 @@ int building_warehouse_remove_export(building *warehouse, int resource, int amou
     }
     int removed_amount = building_warehouse_try_remove_resource(warehouse, resource, amount);
     int price = trade_price_sell(resource, land_trader);
-    city_finance_process_export(price * removed_amount);
+    city_finance_process_export(resource, removed_amount, price * removed_amount);
     return removed_amount;
 }
 

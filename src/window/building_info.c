@@ -1,5 +1,6 @@
 #include "building_info.h"
 
+#include <string.h>
 #include "assets/assets.h"
 #include "building/barracks.h"
 #include "building/culture.h"
@@ -48,8 +49,11 @@
 #include "window/building/industry.h"
 #include "window/building/house.h"
 #include "window/building/military.h"
+#include "window/building/stats.h"
 #include "window/building/terrain.h"
 #include "window/building/utility.h"
+#include "window/text_input.h"
+#include <stdio.h>
 
 enum {
     HEIGHT_0_22_BLOCKS = 0,
@@ -74,6 +78,12 @@ static void button_close(int param1, int param2);
 static void button_advisor(int advisor, int param2);
 static void button_mothball(int mothball, int param2);
 static void button_monument_construction(const generic_button *button);
+static void button_stats(const generic_button *button);
+static void button_rename(const generic_button *button);
+
+static generic_button generic_button_rename[] = {
+    {0, 0, 100, 20, button_rename}
+};
 
 static image_button image_buttons_help_advisor_close[] = {
     {0, 0, 24, 24, IB_NORMAL, GROUP_CONTEXT_ICONS, 0, button_help, button_none, 0, 0, 1},
@@ -88,6 +98,10 @@ static image_button image_button_mothball[] = {
 
 static generic_button generic_button_monument_construction[] = {
     {80, 3, 304, 24, button_monument_construction}
+};
+
+static generic_button generic_button_stats[] = {
+    {0, 0, 100, 20, button_stats}
 };
 
 static building_info_context context;
@@ -565,7 +579,15 @@ static void draw_background(void)
     } else if (context.type == BUILDING_INFO_TERRAIN) {
         window_building_draw_terrain(&context);
     } else if (context.type == BUILDING_INFO_BUILDING) {
-        building_type btype = building_get(context.building_id)->type;
+        building *b = building_get(context.building_id);
+        building_type btype = b->type;
+        if (strlen(b->nickname) > 0) {
+            char title[256];
+            snprintf(title, sizeof(title), "%s (%s)", b->nickname, building_get_display_name(b));
+            text_draw_centered((const uint8_t*)title, context.x_offset, context.y_offset + 18, context.width_blocks * BLOCK_SIZE, FONT_LARGE_BLACK, 0);
+            context.y_offset += 20;
+        }
+
         if (building_is_house(btype)) {
             window_building_draw_house(&context);
         } else if (btype == BUILDING_WHEAT_FARM) {
@@ -862,6 +884,18 @@ static void draw_foreground(void)
                 window_building_draw_storage_orders_foreground(&context);
             } else {
                 window_building_draw_storage_foreground(&context);
+                int x = context.x_offset + 120;
+                int y = context.y_offset + context.height_blocks * BLOCK_SIZE - 40;
+                generic_button_stats[0].x = x;
+                generic_button_stats[0].y = y;
+                button_border_draw(x, y, 100, 20, 0);
+                text_draw_centered(translation_for(TR_STATISTICS), x, y + 4, 100, FONT_NORMAL_BLACK, 0);
+
+                int x_rename = context.x_offset + 10;
+                generic_button_rename[0].x = x_rename;
+                generic_button_rename[0].y = y;
+                button_border_draw(x_rename, y, 100, 20, 0);
+                text_draw_centered(translation_for(TR_RENAME), x_rename, y + 4, 100, FONT_NORMAL_BLACK, 0);
             }
         } else if (btype == BUILDING_DEPOT) {
             if (context.depot_selection == 2) {
@@ -1031,6 +1065,13 @@ static int handle_specific_building_info_mouse(const mouse *m)
             } else if (context.show_special_orders == SPECIAL_ORDERS_ROADBLOCK) {
                 return window_building_handle_mouse_roadblock_orders(m, &context);
             } else {
+                unsigned int button_id;
+                if (generic_buttons_handle_mouse(m, 0, 0, generic_button_stats, 1, &button_id)) {
+                    return 1;
+                }
+                if (generic_buttons_handle_mouse(m, 0, 0, generic_button_rename, 1, &button_id)) {
+                    return 1;
+                }
                 return window_building_handle_mouse_storage(m, &context);
             }
         } else if ((btype >= BUILDING_GRAND_TEMPLE_CERES && btype <= BUILDING_GRAND_TEMPLE_VENUS) ||
@@ -1214,6 +1255,23 @@ static void button_close(int param1, int param2)
 static void button_advisor(int advisor, int param2)
 {
     window_advisors_show_advisor(advisor);
+}
+
+static void button_stats(const generic_button *button)
+{
+    window_building_stats_show(context.building_id);
+}
+
+static void rename_callback(const uint8_t *text)
+{
+    building *b = building_get(context.building_id);
+    snprintf(b->nickname, sizeof(b->nickname), "%s", text);
+}
+
+static void button_rename(const generic_button *button)
+{
+    building *b = building_get(context.building_id);
+    window_text_input_show(translation_for(TR_RENAME), (const uint8_t*)b->nickname, (const uint8_t*)b->nickname, 31, rename_callback);
 }
 
 static void button_mothball(int param1, int param2)

@@ -7,6 +7,21 @@
 #include "game/resource.h"
 #include "translation/translation.h"
 
+typedef struct resource_stat {
+    unsigned int in_per_year;
+    unsigned int out_per_year;
+    unsigned int in_this_minute;
+    unsigned int out_this_minute;
+    unsigned int in_last_minute;
+    unsigned int out_last_minute;
+} resource_stat;
+
+typedef struct building_statistics {
+    resource_stat resource_stats[RESOURCE_MAX];
+    time_millis last_minute_update;
+    int year_of_stats;
+} building_statistics;
+
 typedef enum order_condition_type {
     ORDER_CONDITION_NEVER = 0,
     ORDER_CONDITION_ALWAYS,
@@ -203,9 +218,13 @@ typedef struct building {
     unsigned char has_latrines_access;
     short resources[RESOURCE_MAX];
     unsigned char accepted_goods[RESOURCE_MAX];
+    building_statistics *stats;
+    char nickname[32];
 } building;
 
 building *building_get(int id);
+
+const char *building_get_display_name(const building *b);
 
 int building_dist(int x, int y, int w, int h, building *b);
 
