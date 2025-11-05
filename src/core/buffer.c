@@ -3,6 +3,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+/**
+ * @file buffer.c
+ * @brief Implementation of the memory buffer functions.
+ */
+
 void buffer_init(buffer *buf, void *data, int size)
 {
     buf->data = data;
@@ -22,6 +27,12 @@ void buffer_set(buffer *buf, int offset)
     buf->index = offset;
 }
 
+/**
+ * @brief Checks if there is enough space in the buffer for a given size.
+ * @param buf The buffer to check.
+ * @param size The size to check for.
+ * @return 1 if there is enough space, 0 otherwise.
+ */
 static int check_size(buffer *buf, size_t size)
 {
     if (buf->index + size > buf->size) {

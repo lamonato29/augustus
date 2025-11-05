@@ -1,5 +1,10 @@
 #include "complex_button.h"
 
+/**
+ * @file complex_button.c
+ * @brief Implementation of the complex_button functions.
+ */
+
 #include "graphics/button.h"
 #include "graphics/graphics.h"
 #include "graphics/panel.h"
@@ -8,6 +13,10 @@
 
 #include <stddef.h>
 
+/**
+ * @brief Draws a complex button with the default style.
+ * @param button A pointer to the button to draw.
+ */
 static void draw_default_style(const complex_button *button)
 {
     const int inner_margin = 2; // small horizontal margin for text/images
@@ -109,6 +118,10 @@ static void draw_default_style(const complex_button *button)
     graphics_reset_clip_rectangle();
 }
 
+/**
+ * @brief Draws a complex button with the gray style.
+ * @param button A pointer to the button to draw.
+ */
 static void draw_grey_style(const complex_button *button)
 {
     graphics_set_clip_rectangle(button->x, button->y, button->width, button->height);

@@ -3,8 +3,14 @@
 
 #include <stdint.h>
 
+/**
+ * @file color.h
+ * @brief Defines color constants and macros.
+ */
+
 typedef uint32_t color_t;
 
+// General Colors
 #define COLOR_BLACK 0xff000000
 #define COLOR_BLUE 0xff0055ff
 #define COLOR_RED 0xffff0000
@@ -19,6 +25,7 @@ typedef uint32_t color_t;
 #define COLOR_BORDER_GREEN 0xfffae094   //light yellow
 #define COLOR_BORDER_RED 0xffac5446
 
+// Font Colors
 #define COLOR_FONT_RED COLOR_RED
 #define COLOR_FONT_BLUE 0xff0055ff
 #define COLOR_FONT_YELLOW 0xffe7e75a
@@ -32,6 +39,7 @@ typedef uint32_t color_t;
 #define COLOR_INSET_LIGHT 0xffffffff
 #define COLOR_INSET_DARK 0xff848484
 
+// Risk Icons
 #define COLOR_RISK_ICON_BORDER_DARK 0xf0000000
 #define COLOR_RISK_ICON_BORDER_LIGHT 0xf0ffffff
 #define COLOR_RISK_ICON_LOW 0xffcaae6f
@@ -41,6 +49,7 @@ typedef uint32_t color_t;
 
 #define COLOR_MAINTAIN_ICON 0xfffbf0f5
 
+// Color Masks
 #define COLOR_MASK_NONE 0xffffffff
 #define COLOR_MASK_RED 0xffff0818
 #define COLOR_MASK_GREEN 0xff18ff18

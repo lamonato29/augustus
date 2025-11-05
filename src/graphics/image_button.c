@@ -1,5 +1,10 @@
 #include "image_button.h"
 
+/**
+ * @file image_button.c
+ * @brief Implementation of the image_button functions.
+ */
+
 #include "assets/assets.h"
 #include "building/menu.h"
 #include "core/config.h"
@@ -10,6 +15,11 @@
 #define PRESSED_REPEAT_INITIAL_MILLIS 300
 #define PRESSED_REPEAT_MILLIS 50
 
+/**
+ * @brief Fades the pressed effect for a set of image buttons.
+ * @param buttons A pointer to the array of buttons.
+ * @param num_buttons The number of buttons.
+ */
 static void fade_pressed_effect(image_button *buttons, unsigned int num_buttons)
 {
     time_millis current_time = time_get_millis();
@@ -27,6 +37,11 @@ static void fade_pressed_effect(image_button *buttons, unsigned int num_buttons)
     }
 }
 
+/**
+ * @brief Fades the pressed effect for a set of build buttons.
+ * @param buttons A pointer to the array of buttons.
+ * @param num_buttons The number of buttons.
+ */
 static void fade_pressed_effect_build(image_button *buttons, unsigned int num_buttons)
 {
     for (unsigned int i = 0; i < num_buttons; i++) {
@@ -68,6 +83,12 @@ void image_buttons_draw(int x, int y, image_button *buttons, unsigned int num_bu
     }
 }
 
+/**
+ * @brief Checks if a button should be in the pressed state.
+ * @param btn A pointer to the button.
+ * @param m A pointer to the mouse state.
+ * @return 1 if the button should be pressed, 0 otherwise.
+ */
 static int should_be_pressed(const image_button *btn, const mouse *m)
 {
     if ((m->left.went_down || m->left.is_down) && btn->left_click_handler != button_none) {

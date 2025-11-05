@@ -1,5 +1,10 @@
 #include "core/calc.h"
 
+/**
+ * @file calc.c
+ * @brief Implementation of the mathematical utility functions.
+ */
+
 int calc_digits_in_number(int value)
 {
     if (value == 0) {
@@ -37,6 +42,12 @@ int calc_value_in_step(int value, int step)
     return value + step - (value % step);
 }
 
+/**
+ * @brief Calculates the absolute difference between two integers.
+ * @param value1 The first integer.
+ * @param value2 The second integer.
+ * @return The absolute difference between the two integers.
+ */
 static int get_delta(int value1, int value2)
 {
     if (value1 <= value2) {

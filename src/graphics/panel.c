@@ -1,5 +1,10 @@
 #include "panel.h"
 
+/**
+ * @file panel.c
+ * @brief Implementation of functions for drawing UI panels and labels.
+ */
+
 #include "graphics/image.h"
 
 void outer_panel_draw(int x, int y, int width_blocks, int height_blocks)

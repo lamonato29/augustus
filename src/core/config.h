@@ -1,11 +1,19 @@
 #ifndef CORE_CONFIG_H
 #define CORE_CONFIG_H
 
+/**
+ * @file config.h
+ * @brief Manages the game's configuration settings.
+ */
+
 #define CONFIG_STRING_VALUE_MAX 65
 
+/**
+ * @brief An enumeration of all integer-based configuration keys.
+ */
 typedef enum {
-    CONFIG_GENERAL_ENABLE_AUDIO,
-    CONFIG_GENERAL_MASTER_VOLUME,
+    CONFIG_GENERAL_ENABLE_AUDIO, /**< Enable or disable audio. */
+    CONFIG_GENERAL_MASTER_VOLUME, /**< The master volume level. */
     CONFIG_GENERAL_ENABLE_MUSIC_RANDOMISE,
     CONFIG_GENERAL_ENABLE_VIDEO_SOUND,
     CONFIG_GENERAL_VIDEO_VOLUME,
@@ -105,67 +113,69 @@ typedef enum {
     CONFIG_MAX_ENTRIES
 } config_key;
 
+/**
+ * @brief An enumeration of all string-based configuration keys.
+ */
 typedef enum {
-    CONFIG_STRING_UI_LANGUAGE_DIR,
+    CONFIG_STRING_UI_LANGUAGE_DIR, /**< The directory of the current language. */
     CONFIG_STRING_MAX_ENTRIES
 } config_string_key;
 
 /**
- * Get an integer config value
- * @param key Integer key
- * @return Config value
+ * @brief Gets the value of an integer-based configuration setting.
+ * @param key The configuration key.
+ * @return The value of the configuration setting.
  */
 int config_get(config_key key);
 
 /**
- * Set an integer config value
- * @param key Integer key
- * @param value Value to set
+ * @brief Sets the value of an integer-based configuration setting.
+ * @param key The configuration key.
+ * @param value The new value.
  */
 void config_set(config_key key, int value);
 
 /**
- * Get a string config value
- * @param key String key
- * @return Config value, is always non-NULL but may be an empty string
+ * @brief Gets the value of a string-based configuration setting.
+ * @param key The configuration key.
+ * @return The value of the configuration setting.
  */
 const char *config_get_string(config_string_key key);
 
 /**
- * Set a string config value
- * @param key String key
- * @param value Value to set
+ * @brief Sets the value of a string-based configuration setting.
+ * @param key The configuration key.
+ * @param value The new value.
  */
 void config_set_string(config_string_key key, const char *value);
 
 /**
- * Set a default config value
- * @param key Integer key
- * @return Default config value
+ * @brief Gets the default value of an integer-based configuration setting.
+ * @param key The configuration key.
+ * @return The default value of the configuration setting.
  */
 int config_get_default_value(config_key key);
 
 /**
- * Get a string default config value
- * @param key String key
- * @return Default config value, is always non-NULL but may be an empty string
+ * @brief Gets the default value of a string-based configuration setting.
+ * @param key The configuration key.
+ * @return The default value of the configuration setting.
  */
 const char *config_get_default_string_value(config_string_key key);
 
 /**
- * Load config from file
+ * @brief Loads the configuration settings from a file.
  */
 void config_load(void);
 
 /**
- * Whether the user directory must be configured
- *
- * @return 1 If the user directory still needs to be set, 0 otherwise
+ * @brief Checks if the user directory needs to be configured.
+ * @return 1 if the user directory needs to be configured, 0 otherwise.
  */
 int config_must_configure_user_directory(void);
 
 /**
- * Save config to file
+ * @brief Saves the configuration settings to a file.
  */
 void config_save(void);
 

@@ -1,8 +1,18 @@
 #include "graphics.h"
 
+/**
+ * @file graphics.c
+ * @brief Implementation of the basic graphics rendering functions.
+ */
+
 #include "graphics/renderer.h"
 #include "graphics/screen.h"
 
+/**
+ * @brief Sets the translation for the graphics context.
+ * @param x The x-translation.
+ * @param y The y-translation.
+ */
 static void set_translation(int x, int y)
 {
     if (x != 0 || y != 0) {

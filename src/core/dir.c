@@ -1,5 +1,10 @@
 #include "core/dir.h"
 
+/**
+ * @file dir.c
+ * @brief Implementation of the directory-related functions.
+ */
+
 #include "core/config.h"
 #include "core/file.h"
 #include "core/string.h"
@@ -17,6 +22,11 @@ static struct {
     char current_dir[FILE_NAME_MAX];
 } data;
 
+/**
+ * @brief Allocates memory for the directory listing.
+ * @param min The minimum number of files to allocate for.
+ * @param max The maximum number of files to allocate for.
+ */
 static void allocate_listing_files(int min, int max)
 {
     for (int i = min; i < max; i++) {
@@ -25,6 +35,9 @@ static void allocate_listing_files(int min, int max)
     }
 }
 
+/**
+ * @brief Clears the directory listing.
+ */
 static void clear_dir_listing(void)
 {
     data.listing.num_files = 0;
@@ -41,6 +54,9 @@ static void clear_dir_listing(void)
     }
 }
 
+/**
+ * @brief Expands the directory listing to accommodate more files.
+ */
 static void expand_dir_listing(void)
 {
     int old_max_files = data.max_files;
@@ -50,6 +66,14 @@ static void expand_dir_listing(void)
     allocate_listing_files(old_max_files, data.max_files);
 }
 
+/**
+ * @brief Compares two directory entries for sorting.
+ * @param va A pointer to the first directory entry.
+ * @param vb A pointer to the second directory entry.
+ * @return An integer less than, equal to, or greater than zero if the first
+ *         argument is considered to be respectively less than, equal to, or
+ *         greater than the second.
+ */
 static int compare_lower(const void *va, const void *vb)
 {
     const dir_entry *a = (const dir_entry *) va;
@@ -58,6 +82,12 @@ static int compare_lower(const void *va, const void *vb)
     return platform_file_manager_compare_filename(a->name, b->name);
 }
 
+/**
+ * @brief Adds a file to the directory listing.
+ * @param filename The name of the file to add.
+ * @param modified_time The last modification time of the file.
+ * @return LIST_CONTINUE to continue listing files.
+ */
 static int add_to_listing(const char *filename, long modified_time)
 {
     if (data.listing.num_files >= data.max_files) {
@@ -97,6 +127,12 @@ const dir_listing *dir_find_all_subdirectories_at_location(int location)
     return dir_find_all_subdirectories(platform_file_manager_get_directory_for_location(location, 0));
 }
 
+/**
+ * @brief Compares a filename for case correction.
+ * @param filename The filename to compare.
+ * @param unused An unused parameter.
+ * @return LIST_MATCH if the filenames match, LIST_NO_MATCH otherwise.
+ */
 static int compare_case(const char *filename, long unused)
 {
     if (platform_file_manager_compare_filename(filename, data.cased_filename) == 0) {
@@ -107,12 +143,23 @@ static int compare_case(const char *filename, long unused)
     return LIST_NO_MATCH;
 }
 
+/**
+ * @brief Corrects the case of a filename.
+ * @param dir The directory to search in.
+ * @param filename The filename to correct.
+ * @param type The type of the file.
+ * @return 1 if the file was found, 0 otherwise.
+ */
 static int correct_case(const char *dir, char *filename, int type)
 {
     data.cased_filename = filename;
     return platform_file_manager_list_directory_contents(dir, type, 0, compare_case) == LIST_MATCH;
 }
 
+/**
+ * @brief Moves a string one character to the left.
+ * @param str The string to move.
+ */
 static void move_left(char *str)
 {
     while (*str) {
@@ -122,6 +169,12 @@ static void move_left(char *str)
     *str = 0;
 }
 
+/**
+ * @brief Gets the case-corrected path of a file.
+ * @param dir The directory to search in.
+ * @param filepath The file path to correct.
+ * @return The case-corrected file path, or NULL if the file was not found.
+ */
 static const char *get_case_corrected_file(const char *dir, const char *filepath)
 {
     static char corrected_filename[2 * FILE_NAME_MAX];

@@ -1,5 +1,10 @@
 #include "config.h"
 
+/**
+ * @file config.c
+ * @brief Implementation of the configuration management functions.
+ */
+
 #include "core/dir.h"
 #include "core/file.h"
 #include "core/log.h"
@@ -211,6 +216,9 @@ const char *config_get_default_string_value(config_string_key key)
     return default_string_values[key];
 }
 
+/**
+ * @brief Sets all configuration settings to their default values.
+ */
 static void set_defaults(void)
 {
     for (int i = 0; i < CONFIG_MAX_ENTRIES; ++i) {

@@ -1,5 +1,10 @@
 #include "grid_box.h"
 
+/**
+ * @file grid_box.c
+ * @brief Implementation of the grid_box UI element.
+ */
+
 #include "graphics/button.h"
 #include "graphics/font.h"
 #include "graphics/panel.h"
@@ -9,6 +14,11 @@
 
 #define NO_POSITION ((unsigned int) -1)
 
+/**
+ * @brief Calculates the number of scrollable items in a grid box.
+ * @param grid_box A pointer to the grid box.
+ * @return The number of scrollable items.
+ */
 static unsigned int calculate_scrollable_items(const grid_box_type *grid_box)
 {
     if (grid_box->num_columns == 1) {
@@ -78,6 +88,10 @@ int grid_box_has_scrollbar(const grid_box_type *grid_box)
         calculate_scrollable_items(grid_box) > grid_box->scrollbar.elements_in_view);
 }
 
+/**
+ * @brief Draws the scrollbar for a grid box.
+ * @param grid_box A pointer to the grid box.
+ */
 static void draw_scrollbar(grid_box_type *grid_box)
 {
     scrollbar_type *scrollbar = &grid_box->scrollbar;
@@ -183,6 +197,14 @@ void grid_box_set_bounds(grid_box_type *grid_box, int new_x, int new_y, int new_
     }
 }
 
+/**
+ * @brief Sets the focused item in a grid box.
+ * @param grid_box A pointer to the grid box.
+ * @param position The position of the item to focus.
+ * @param mouse_x The x-coordinate of the mouse relative to the item.
+ * @param mouse_y The y-coordinate of the mouse relative to the item.
+ * @return 1 if the focused item changed, 0 otherwise.
+ */
 static int set_focused_item(grid_box_type *grid_box, unsigned int position, unsigned int mouse_x, unsigned int mouse_y)
 {
     unsigned int old_x = grid_box->focused_item.index != NO_POSITION ? grid_box->focused_item.mouse.x : NO_POSITION;
@@ -211,7 +233,13 @@ static int set_focused_item(grid_box_type *grid_box, unsigned int position, unsi
     return mouse_x != old_x || mouse_y != old_y;
 }
 
-
+/**
+ * @brief Determines which item in a grid box has focus.
+ * @param grid_box A pointer to the grid box.
+ * @param x The x-coordinate of the mouse.
+ * @param y The y-coordinate of the mouse.
+ * @return 1 if the focused item changed, 0 otherwise.
+ */
 static int determine_focus(grid_box_type *grid_box, int x, int y)
 {
     unsigned int inner_padding = grid_box->draw_inner_panel ? BLOCK_SIZE / 2 : 0;

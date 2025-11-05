@@ -5,23 +5,28 @@
 #include <string.h>
 
 /**
- * Creates an array structure
- * @param T The type of item that the array holds
+ * @file array.h
+ * @brief A dynamic array implementation using macros.
+ */
+
+/**
+ * @brief Creates a new array type.
+ * @param T The type of the elements to be stored in the array.
  */
 #define array(T) \
 struct { \
-    T **items; \
-    unsigned int size; \
-    unsigned int blocks; \
-    unsigned int block_offset; \
-    unsigned int bit_offset; \
-    void (*constructor)(T *, unsigned int); \
-    int (*in_use)(const T *); \
+    T **items; /**< A pointer to the array's data. */ \
+    unsigned int size; /**< The number of items in the array. */ \
+    unsigned int blocks; /**< The number of allocated blocks. */ \
+    unsigned int block_offset; /**< The offset to the current block. */ \
+    unsigned int bit_offset; /**< The bit offset for block calculation. */ \
+    void (*constructor)(T *, unsigned int); /**< A constructor function for new items. */ \
+    int (*in_use)(const T *); /**< A function to check if an item is in use. */ \
 }
 
 /**
- * Clears an array
- * @param a The array structure
+ * @brief Clears the array and frees its memory.
+ * @param a The array to clear.
  */
 #define array_clear(a) \
 ( \
@@ -30,18 +35,12 @@ struct { \
 )
 
 /**
- * Initiates an array
- * @param a The array structure
- * @param size The size of each block of items
- * @param new_item_callback A function to run when a new item is added to an array. Can be null.
- *        Items are are always zeroed before the function is called.
- *        The function should have the following signature:
- *        void(<item> *, int position). <item> is the new array item, position is its index.
- * @param in_use_callback A function to check if the current position has a valid item. Can be null.
- *        If null, it is assumed that every item in the array is valid.
- *        The function should have the following signature:
- *        int(const <item> *). <item> is the current array item. Should return 1 if the item is being used.
- * @return Whether memory was properly allocated.
+ * @brief Initializes a new array.
+ * @param a The array to initialize.
+ * @param size The number of items to allocate per block.
+ * @param new_item_callback A constructor function to be called for each new item.
+ * @param in_use_callback A function to check if an item is in use.
+ * @return 1 on success, 0 on failure.
  */
 #define array_init(a, size, new_item_callback, in_use_callback) \
 ( \
@@ -54,9 +53,9 @@ struct { \
 )
 
 /**
- * Creates a new item for the array, either by finding an available empty item or by expanding the array.
- * @param a The array structure
- * @param ptr A pointer that will get the new item. Will be null if there was a memory allocation error.
+ * @brief Creates a new item in the array.
+ * @param a The array.
+ * @param ptr A pointer to the new item.
  */
 #define array_new_item(a, ptr) \
 { \
@@ -80,11 +79,10 @@ struct { \
 }
 
 /**
- * Creates a new item for the array, either by finding an available empty item or by expanding the array.
- * @param a The array structure
- * @param index The index upon which to start searching for a free slot. If index is greater than the array size,
- *        the array will be expanded.
- * @param ptr A pointer that will get the new item. Will be null if there was a memory allocation error.
+ * @brief Creates a new item in the array after a given index.
+ * @param a The array.
+ * @param index The index after which to create the new item.
+ * @param ptr A pointer to the new item.
  */
 #define array_new_item_after_index(a, index, ptr) \
 { \
@@ -114,9 +112,9 @@ struct { \
 }
 
 /**
- * Removes an item from an array, moving the other items left and calling their constructors if applicable
- * @param a The array structure
- * @param index The array index to remove
+ * @brief Removes an item from the array at a given index.
+ * @param a The array.
+ * @param index The index of the item to remove.
  */
 #define array_remove_item(a, index) \
 { \
@@ -133,9 +131,9 @@ struct { \
 }
 
 /**
- * Advances an array, creating a new item, incrementing size and increasing the memory buffer if needed
- * @param a The array structure
- * @return A pointer to the newest item of the array, or 0 if there was a memory allocation error
+ * @brief Advances the array, creating a new item at the end.
+ * @param a The array.
+ * @return A pointer to the new item, or 0 on failure.
  */
 #define array_advance(a) \
 ( \
@@ -145,10 +143,10 @@ struct { \
 )
 
 /**
- * Gets the array item at the specified position
- * @param a The array structure
- * @param position The position to fetch
- * @return A pointer to the item at the requested position
+ * @brief Gets a pointer to the item at the specified position in the array.
+ * @param a The array.
+ * @param position The index of the item to retrieve.
+ * @return A pointer to the item.
  */
 #define array_item(a, position) \
 ( \
@@ -156,35 +154,33 @@ struct { \
 )
 
 /**
- * Returns the first item of the array, or 0 if the array has no items
- * @param a The array structure
- * @return A pointer to the first item of the array, or 0 if the array has no items
+ * @brief Gets a pointer to the first item in the array.
+ * @param a The array.
+ * @return A pointer to the first item, or NULL if the array is empty.
  */
 #define array_first(a) \
     ( (a).size > 0 ? (a).items[0] : 0 )
 
 /**
- * Returns the last item of the array, or 0 if the array has no items
- * @param a The array structure
- * @return A pointer to the last item of the array, or 0 if the array has no items
+ * @brief Gets a pointer to the last item in the array.
+ * @param a The array.
+ * @return A pointer to the last item, or NULL if the array is empty.
  */
 #define array_last(a) \
     ( (a).size > 0 ? array_item(a, (a).size - 1) : 0 )
 
 /**
- * Iterates through an array
- * @param a The array structure
- * @param item A pointer to the array item that will be used to traverse the structure
- * @note You can use the array_index parameter to retrieve the index of the current item
+ * @brief Iterates over each item in the array.
+ * @param a The array to iterate over.
+ * @param item A pointer to the current item in the iteration.
  */
 #define array_foreach(a, item) \
     for(unsigned int array_index = 0; array_index < (a).size && ((item) = array_item(a, array_index)) != 0; array_index++)
 
 /**
- * Iterates through an array, calling the callback function for each item
- * @param a The array structure
- * @param callback The function callback to call for each item, in the format "callback(T *item, unsigned int array_index)"
- * @note You can use the array_index parameter to retrieve the index of the current item
+ * @brief Iterates over each item in the array and calls a callback function.
+ * @param a The array to iterate over.
+ * @param callback The callback function to call for each item.
  */
 #define array_foreach_callback(a, callback) \
     for(unsigned int array_index = 0; array_index < (a).size && array_item(a, array_index) != 0; array_index++) { \
@@ -192,9 +188,8 @@ struct { \
     }
 
 /**
- * Trims an array, removing its latest items that aren't being used until the first one is used.
- * The first item of the array is always kept.
- * @param a The array structure
+ * @brief Trims the array by removing unused items from the end.
+ * @param a The array to trim.
  */
 #define array_trim(a) \
 { \
@@ -206,10 +201,8 @@ struct { \
 }
 
 /**
- * Packs an array, making all used elements of an array contiguous
- * Moved elements call their constructors
- * This function only does anything if the array has an in_use callback
- * @param a The array structure
+ * @brief Packs the array by removing unused items and making the used items contiguous.
+ * @param a The array to pack.
  */
 #define array_pack(a) \
 { \
@@ -239,10 +232,10 @@ struct { \
 }
 
 /**
- * Expands an array to fit the specified amount of items. The array may become larger than size, but never smaller.
- * @param a The array structure
- * @param Size The size that the array should at least expand into
- * @return Whether memory was properly allocated.
+ * @brief Expands the array to a new size.
+ * @param a The array to expand.
+ * @param size The new size of the array.
+ * @return 1 on success, 0 on failure.
  */
 #define array_expand(a, size) \
 ( \
@@ -250,10 +243,9 @@ struct { \
 )
 
 /**
- * Gets the next item of the array without checking for memory bounds.
- * ONLY use when you're SURE the array memory bounds won't be exceeded!
- * @param a The array structure
- * @return A pointer to the newest item of the array, or 0 if there was a memory allocation error
+ * @brief Gets the next item in the array without checking bounds.
+ * @param a The array.
+ * @return A pointer to the next item.
  */
 #define array_next(a) \
 ( \
@@ -263,42 +255,42 @@ struct { \
     array_item(a, (a).size - 1) \
 )
 
-/**
- * This definition is private and should not be used
- */
+/** @private */
 #define array_create_blocks(a, num_blocks) \
 ( \
     array_add_blocks((void ***)&(a).items, &(a).blocks, (a).block_offset + 1, sizeof(**(a).items), num_blocks) \
 )
 
-/**
- * This function is private and should not be used
- */
+/** @private */
 int array_add_blocks(void ***data, unsigned int *blocks, unsigned int items_per_block, unsigned int item_size, unsigned int num_blocks);
 
-/**
- * This function is private and should not be used
- */
+/** @private */
 void array_free(void **data, unsigned int blocks);
 
-/**
- * Private helper compile-time functions for finding the next power of two into which a number fits
- */
-#define array_next_power_of_two_0(v) ((v) - 1) 
+/** @private */
+#define array_next_power_of_two_0(v) ((v) - 1)
+/** @private */
 #define array_next_power_of_two_1(v) (array_next_power_of_two_0(v) | array_next_power_of_two_0(v) >> 1)
+/** @private */
 #define array_next_power_of_two_2(v) (array_next_power_of_two_1(v) | array_next_power_of_two_1(v) >> 2)
+/** @private */
 #define array_next_power_of_two_3(v) (array_next_power_of_two_2(v) | array_next_power_of_two_2(v) >> 4)
+/** @private */
 #define array_next_power_of_two_4(v) (array_next_power_of_two_3(v) | array_next_power_of_two_3(v) >> 8)
+/** @private */
 #define array_next_power_of_two_5(v) (array_next_power_of_two_4(v) | array_next_power_of_two_4(v) >> 16)
+/** @private */
 #define array_next_power_of_two(v) (((v) < 1) ? 1 : array_next_power_of_two_5(v) + 1)
 
-/**
- * Private helper compile-time functions for finding the which bit is active on a power of two
- */
+/** @private */
 #define array_active_bit_1(n) (((n) >= 2) ? 1 : 0)
+/** @private */
 #define array_active_bit_2(n) (((n) >= 1 << 2) ? (2 + array_active_bit_1((n) >> 2)) : array_active_bit_1(n))
+/** @private */
 #define array_active_bit_3(n) (((n) >= 1 << 4) ? (4 + array_active_bit_2((n) >> 4)) : array_active_bit_2(n))
+/** @private */
 #define array_active_bit_4(n) (((n) >= 1 << 8) ? (8 + array_active_bit_3((n) >> 8)) : array_active_bit_3(n))
+/** @private */
 #define array_active_bit(n)   (((n) >= 1 << 16) ? (16 + array_active_bit_4((n) >> 16)) : array_active_bit_4(n))
 
 #endif // CORE_ARRAY_H

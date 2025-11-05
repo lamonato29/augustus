@@ -1,5 +1,19 @@
 #include "generic_button.h"
 
+/**
+ * @file generic_button.c
+ * @brief Implementation of the generic_button functions.
+ */
+
+/**
+ * @brief Gets the ID of the button at a given position.
+ * @param m A pointer to the mouse state.
+ * @param x The x-coordinate of the buttons.
+ * @param y The y-coordinate of the buttons.
+ * @param buttons A pointer to the array of buttons.
+ * @param num_buttons The number of buttons.
+ * @return The ID of the button at the given position, or 0 if no button is at the position.
+ */
 static unsigned int get_button(const mouse *m, int x, int y, generic_button *buttons, unsigned int num_buttons)
 {
     for (unsigned int i = 0; i < num_buttons; i++) {

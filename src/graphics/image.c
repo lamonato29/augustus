@@ -1,5 +1,10 @@
 #include "image.h"
 
+/**
+ * @file image.c
+ * @brief Implementation of image drawing functions.
+ */
+
 #include "assets/assets.h"
 #include "core/image.h"
 #include "graphics/renderer.h"
@@ -53,6 +58,11 @@ void image_blend_footprint_color(int x, int y, color_t color, float scale)
         CUSTOM_IMAGE_GREEN_FOOTPRINT : CUSTOM_IMAGE_RED_FOOTPRINT, x, y, scale, 0);
 }
 
+/**
+ * @brief Gets the base color for a given font.
+ * @param font The font.
+ * @return The base color for the font.
+ */
 static color_t base_color_for_font(font_t font)
 {
     switch (font) {
@@ -65,6 +75,15 @@ static color_t base_color_for_font(font_t font)
     }
 }
 
+/**
+ * @brief Draws a multibyte letter.
+ * @param font The font to use.
+ * @param img A pointer to the image of the letter.
+ * @param x The x-coordinate to draw the letter at.
+ * @param y The y-coordinate to draw the letter at.
+ * @param color The color of the letter.
+ * @param scale The scale to draw the letter at.
+ */
 static void draw_multibyte_letter(font_t font, const image *img, int x, int y, color_t color, float scale)
 {
     switch (font) {
@@ -111,6 +130,13 @@ void image_draw_letter(font_t font, int letter_id, int x, int y, color_t color, 
     graphics_renderer()->draw_image(img, x, y, color, scale);
 }
 
+/**
+ * @brief Draws a fullscreen background image.
+ * @param image_id The ID of the image to draw.
+ * @param x The x-coordinate to draw the image at.
+ * @param y The y-coordinate to draw the image at.
+ * @param alpha The alpha value to apply to the image.
+ */
 static inline void draw_fullscreen_background(int image_id, int x, int y, color_t alpha)
 {
     int s_width = screen_width();
@@ -144,6 +170,9 @@ static inline void draw_fullscreen_background(int image_id, int x, int y, color_
     }
 }
 
+/**
+ * @brief Draws borders on the screen for fullscreen mode.
+ */
 static inline void draw_fullscreen_borders(void)
 {
     int width = screen_width();

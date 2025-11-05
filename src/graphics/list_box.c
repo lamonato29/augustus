@@ -1,5 +1,10 @@
 #include "list_box.h"
 
+/**
+ * @file list_box.c
+ * @brief Implementation of the list_box UI element.
+ */
+
 #include "core/direction.h"
 #include "graphics/button.h"
 #include "graphics/font.h"
@@ -76,6 +81,11 @@ void list_box_request_refresh(list_box_type *list_box)
     }
 }
 
+/**
+ * @brief Gets the actual width of a list box in blocks, taking the scrollbar into account.
+ * @param list_box A pointer to the list box.
+ * @return The actual width of the list box in blocks.
+ */
 static int get_actual_width_blocks(const list_box_type *list_box)
 {
     int width_blocks = list_box->width_blocks;
@@ -85,6 +95,10 @@ static int get_actual_width_blocks(const list_box_type *list_box)
     return width_blocks;
 }
 
+/**
+ * @brief Draws the scrollbar for a list box.
+ * @param list_box A pointer to the list box.
+ */
 static void draw_scrollbar(list_box_type *list_box)
 {
     scrollbar_type *scrollbar = &list_box->scrollbar;
@@ -152,6 +166,12 @@ void list_box_draw(list_box_type *list_box)
     }
 }
 
+/**
+ * @brief Handles arrow key input for a list box.
+ * @param list_box A pointer to the list box.
+ * @param direction The direction of the arrow key.
+ * @return 1 if the input was handled, 0 otherwise.
+ */
 static int handle_arrow_keys(list_box_type *list_box, int direction)
 {
     int delta;
@@ -197,6 +217,13 @@ static int handle_arrow_keys(list_box_type *list_box, int direction)
     return 1;
 }
 
+/**
+ * @brief Gets the ID of the button at a given position.
+ * @param list_box A pointer to the list box.
+ * @param x The x-coordinate of the position.
+ * @param y The y-coordinate of the position.
+ * @return The ID of the button at the given position, or LIST_BOX_NO_SELECTION if no button is at the position.
+ */
 static unsigned int get_button_id_from_position(const list_box_type *list_box, int x, int y)
 {
     int padding = list_box->draw_inner_panel ? BLOCK_SIZE / 2 : 0;

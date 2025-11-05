@@ -5,18 +5,18 @@
 #include <stdint.h>
 
 /**
-* @file
-* Read to or write from memory buffer.
-*/
+ * @file buffer.h
+ * @brief A memory buffer for reading and writing data.
+ */
 
 /**
-* Struct representing a buffer to read from / write to
-*/
+ * @brief Represents a memory buffer for reading and writing data.
+ */
 typedef struct {
-    uint8_t *data; /**< Read-only: data */
-    size_t size; /**< Read-only: size of the data */
-    size_t index; /**< Read-only: bytes read/written so far */
-    int overflow; /**< Read-only: indicates attempt to read/write beyond end of buffer */
+    uint8_t *data; /**< A pointer to the raw data. */
+    size_t size; /**< The total size of the buffer. */
+    size_t index; /**< The current position in the buffer. */
+    int overflow; /**< A flag indicating if an overflow has occurred. */
 } buffer;
 
 /**

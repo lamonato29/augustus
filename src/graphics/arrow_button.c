@@ -1,5 +1,10 @@
 #include "arrow_button.h"
 
+/**
+ * @file arrow_button.c
+ * @brief Implementation of the arrow_button functions.
+ */
+
 #include "graphics/image.h"
 
 static const int REPEATS[] = {
@@ -22,6 +27,15 @@ void arrow_buttons_draw(int x, int y, arrow_button *buttons, unsigned int num_bu
     }
 }
 
+/**
+ * @brief Gets the ID of the button at a given position.
+ * @param m A pointer to the mouse state.
+ * @param x The x-coordinate of the buttons.
+ * @param y The y-coordinate of the buttons.
+ * @param buttons A pointer to the array of buttons.
+ * @param num_buttons The number of buttons.
+ * @return The ID of the button at the given position, or 0 if no button is at the position.
+ */
 static unsigned int get_button(const mouse *m, int x, int y, arrow_button *buttons, unsigned int num_buttons)
 {
     for (unsigned int i = 0; i < num_buttons; i++) {

@@ -1,5 +1,10 @@
 #include "button.h"
 
+/**
+ * @file button.c
+ * @brief Implementation of common button-related functions.
+ */
+
 #include "graphics/image.h"
 #include "graphics/panel.h"
 

@@ -1,5 +1,10 @@
 #include "lang_text.h"
 
+/**
+ * @file lang_text.c
+ * @brief Implementation of functions for drawing language-specific text.
+ */
+
 #include "core/lang.h"
 #include "core/locale.h"
 #include "core/string.h"

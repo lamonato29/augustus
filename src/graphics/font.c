@@ -1,5 +1,10 @@
 #include "font.h"
 
+/**
+ * @file font.c
+ * @brief Implementation of font-related functions.
+ */
+
 #include "core/encoding_japanese.h"
 #include "core/encoding_trad_chinese.h"
 #include "core/image.h"
@@ -252,6 +257,13 @@ static struct {
     int multibyte;
 } data;
 
+/**
+ * @brief Calculates the y-offset for a character with no special offset.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_none(uint8_t c, int image_height, int line_height)
 {
     int offset = image_height - line_height;
@@ -261,6 +273,13 @@ static int image_y_offset_none(uint8_t c, int image_height, int line_height)
     return offset;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with the default font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_default(uint8_t c, int image_height, int line_height)
 {
     int offset = image_height - line_height;
@@ -273,6 +292,13 @@ static int image_y_offset_default(uint8_t c, int image_height, int line_height)
     return offset;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with an Eastern European font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_eastern(uint8_t c, int image_height, int line_height)
 {
     int offset = image_height - line_height;
@@ -285,6 +311,13 @@ static int image_y_offset_eastern(uint8_t c, int image_height, int line_height)
     return offset;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a normal or small plain Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_normal_small_plain(uint8_t c, int image_height, int line_height)
 {
     switch (c) {
@@ -299,11 +332,25 @@ static int image_y_offset_cyrillic_normal_small_plain(uint8_t c, int image_heigh
     }
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a normal colored Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_normal_colored(uint8_t c, int image_height, int line_height)
 {
     return c == 201 ? 3 : 0;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a large plain Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_large_plain(uint8_t c, int image_height, int line_height)
 {
     switch (c) {
@@ -333,6 +380,13 @@ static int image_y_offset_cyrillic_large_plain(uint8_t c, int image_height, int 
     }
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a large black Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_large_black(uint8_t c, int image_height, int line_height)
 {
     switch (c) {
@@ -366,6 +420,13 @@ static int image_y_offset_cyrillic_large_black(uint8_t c, int image_height, int 
     }
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a large brown Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_large_brown(uint8_t c, int image_height, int line_height)
 {
     switch (c) {
@@ -399,6 +460,13 @@ static int image_y_offset_cyrillic_large_brown(uint8_t c, int image_height, int 
     }
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a normal brown Cyrillic font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_cyrillic_normal_brown(uint8_t c, int image_height, int line_height)
 {
     switch (c) {
@@ -430,6 +498,13 @@ static int image_y_offset_cyrillic_normal_brown(uint8_t c, int image_height, int
     }
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a Greek font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_greek(uint8_t c, int image_height, int line_height)
 {
     if (c == 0xda || c == 0xdb) {
@@ -442,6 +517,13 @@ static int image_y_offset_greek(uint8_t c, int image_height, int line_height)
     return 0;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a Chinese font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_chinese(uint8_t c, int image_height, int line_height)
 {
     if (line_height == 15) {
@@ -457,6 +539,13 @@ static int image_y_offset_chinese(uint8_t c, int image_height, int line_height)
     return image_height - line_height;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a Korean font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_korean(uint8_t c, int image_height, int line_height)
 {
     if (line_height == 15) {
@@ -479,6 +568,13 @@ static int image_y_offset_korean(uint8_t c, int image_height, int line_height)
     return image_height - line_height;
 }
 
+/**
+ * @brief Calculates the y-offset for a character with a Japanese font.
+ * @param c The character.
+ * @param image_height The height of the character's image.
+ * @param line_height The height of a line of text.
+ * @return The y-offset of the character.
+ */
 static int image_y_offset_japanese(uint8_t c, int image_height, int line_height)
 {
     if (line_height == 15) {
