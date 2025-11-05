@@ -24,8 +24,11 @@ tasks.register('getVersion') {
                 errorOutput = stderr
                 ignoreExitValue = true
             }.exitValue
-
-            versionTweak = stdout.toString().trim().toInteger()
+            if (tweakResult != 0) {
+                versionTweak = 0
+            } else {
+                versionTweak = stdout.toString().trim().toInteger()
+            }
             stdout.reset()
 
             def lastCommitResult = exec {
