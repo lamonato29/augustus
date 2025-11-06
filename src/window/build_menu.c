@@ -25,6 +25,7 @@
 #include "widget/city.h"
 #include "widget/sidebar/city.h"
 #include "window/city.h"
+#include "window/manage_depots.h"
 
 #define MENU_X_OFFSET 298
 #define MENU_Y_OFFSET 110
@@ -370,6 +371,10 @@ static void button_menu_item(int item)
 
     building_type type = building_menu_type(data.selected_submenu, item);
 
+    if (type == BUILDING_MENU_MANAGE_DEPOTS) {
+        window_manage_depots_show();
+        return;
+    }
     if (is_auto_cycle_button(type)) {
         building_construction_toggle_auto_cycle();
         window_invalidate();
