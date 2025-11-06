@@ -57,8 +57,6 @@ static void draw_background(void)
     outer_panel_draw(0, 0, 40, 30);
     text_draw_centered(translation_for(TR_MANAGE_DEPOTS), 16, 16, 608, FONT_LARGE_BLACK, 0);
     inner_panel_draw(16, 42, 38, 21);
-
-    init_filters();
 }
 
 static void draw_foreground(void)
@@ -151,8 +149,8 @@ static void destination_filter_changed(dropdown_button *button)
 static void init_filters(void)
 {
     static lang_fragment product_frags[RESOURCE_MAX];
-    static lang_fragment origin_frags[BUILDING_TYPE_MAX];
-    static lang_fragment destination_frags[BUILDING_TYPE_MAX];
+    static lang_fragment origin_frags[BUILDING_TYPE_MAX * 2];
+    static lang_fragment destination_frags[BUILDING_TYPE_MAX * 2];
 
     product_frags[0].text_id = TR_ALL;
     product_frags[0].parameter1 = 0;
@@ -170,11 +168,13 @@ static void init_filters(void)
 
     int origin_count = 1;
     for (building *b = building_first_of_type(BUILDING_WAREHOUSE); b; b = b->next_of_type) {
+        if (origin_count >= BUILDING_TYPE_MAX * 2) break;
         origin_frags[origin_count].text = (const uint8_t*)building_get_display_name(b);
         origin_frags[origin_count].parameter1 = b->id;
         origin_count++;
     }
     for (building *b = building_first_of_type(BUILDING_GRANARY); b; b = b->next_of_type) {
+        if (origin_count >= BUILDING_TYPE_MAX * 2) break;
         origin_frags[origin_count].text = (const uint8_t*)building_get_display_name(b);
         origin_frags[origin_count].parameter1 = b->id;
         origin_count++;
@@ -182,11 +182,13 @@ static void init_filters(void)
 
     int destination_count = 1;
     for (building *b = building_first_of_type(BUILDING_WAREHOUSE); b; b = b->next_of_type) {
+        if (destination_count >= BUILDING_TYPE_MAX * 2) break;
         destination_frags[destination_count].text = (const uint8_t*)building_get_display_name(b);
         destination_frags[destination_count].parameter1 = b->id;
         destination_count++;
     }
     for (building *b = building_first_of_type(BUILDING_GRANARY); b; b = b->next_of_type) {
+        if (destination_count >= BUILDING_TYPE_MAX * 2) break;
         destination_frags[destination_count].text = (const uint8_t*)building_get_display_name(b);
         destination_frags[destination_count].parameter1 = b->id;
         destination_count++;
@@ -218,6 +220,12 @@ static void populate_depot_list(void)
 
 void window_manage_depots_show(void)
 {
+    static bool filters_initialized = false;
+    if (!filters_initialized) {
+        init_filters();
+        filters_initialized = true;
+    }
+
     populate_depot_list();
     apply_filters();
 
