@@ -12,8 +12,10 @@
 #include "graphics/window.h"
 #include "widget/dropdown_button.h"
 #include "input/input.h"
+#include "graphics/button.h"
 #include "translation/translation.h"
 #include "window/building_info.h"
+#include <stdbool.h>
 
 #define MAX_VISIBLE_DEPOTS 15
 #define ROW_HEIGHT 22
@@ -32,9 +34,13 @@ static dropdown_button product_filter_dropdown;
 static dropdown_button origin_filter_dropdown;
 static dropdown_button destination_filter_dropdown;
 
-static int selected_product = 0;
+static resource_type selected_product = 0;
 static int selected_origin = 0;
 static int selected_destination = 0;
+
+static resource_type product_map[RESOURCE_MAX];
+static int origin_map[BUILDING_TYPE_MAX * 2];
+static int destination_map[BUILDING_TYPE_MAX * 2];
 
 static void on_scroll(void)
 {
@@ -49,8 +55,6 @@ static void depot_button_click(const generic_button *button)
 }
 
 static generic_button depot_buttons[MAX_VISIBLE_DEPOTS];
-
-static void init_filters(void);
 
 static void draw_background(void)
 {
@@ -81,10 +85,16 @@ static void draw_foreground(void)
 
         button_border_draw(depot_buttons[i].x, depot_buttons[i].y, depot_buttons[i].width, depot_buttons[i].height, 0);
 
-        text_draw((const uint8_t*)building_get_display_name(b), 24, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
+        if (b) {
+            text_draw((const uint8_t*)building_get_display_name(b), 24, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
+        }
         text_draw(resource_get_data(info->product_id)->text, 200, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
-        text_draw((const uint8_t*)building_get_display_name(src), 300, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
-        text_draw((const uint8_t*)building_get_display_name(dst), 450, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
+        if (src) {
+            text_draw((const uint8_t*)building_get_display_name(src), 300, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
+        }
+        if (dst) {
+            text_draw((const uint8_t*)building_get_display_name(dst), 450, 56 + i * ROW_HEIGHT, FONT_NORMAL_WHITE, 0);
+        }
     }
 }
 
@@ -114,12 +124,15 @@ static void handle_input(const mouse *m, const hotkeys *h)
 static void apply_filters(void)
 {
     array_clear(filtered_depot_list);
-    for (int i = 0; i < depot_list.size; i++) {
+    for (unsigned int i = 0; i < depot_list.size; i++) {
         depot_info *info = array_item(depot_list, i);
         if ((selected_product == 0 || info->product_id == selected_product) &&
             (selected_origin == 0 || info->source_id == selected_origin) &&
             (selected_destination == 0 || info->destination_id == selected_destination)) {
-            array_add(filtered_depot_list, *info);
+            depot_info *new_info = array_advance(filtered_depot_list);
+            if (new_info) {
+                *new_info = *info;
+            }
         }
     }
     scrollbar_init(&scrollbar, 0, filtered_depot_list.size);
@@ -127,21 +140,21 @@ static void apply_filters(void)
 
 static void product_filter_changed(dropdown_button *button)
 {
-    selected_product = button->buttons[button->selected_index].parameter1;
+    selected_product = product_map[button->selected_value];
     apply_filters();
     window_request_refresh();
 }
 
 static void origin_filter_changed(dropdown_button *button)
 {
-    selected_origin = button->buttons[button->selected_index].parameter1;
+    selected_origin = origin_map[button->selected_value];
     apply_filters();
     window_request_refresh();
 }
 
 static void destination_filter_changed(dropdown_button *button)
 {
-    selected_destination = button->buttons[button->selected_index].parameter1;
+    selected_destination = destination_map[button->selected_value];
     apply_filters();
     window_request_refresh();
 }
@@ -153,16 +166,16 @@ static void init_filters(void)
     static lang_fragment destination_frags[BUILDING_TYPE_MAX * 2];
 
     product_frags[0].text_id = TR_ALL;
-    product_frags[0].parameter1 = 0;
+    product_map[0] = 0;
     origin_frags[0].text_id = TR_ALL;
-    origin_frags[0].parameter1 = 0;
+    origin_map[0] = 0;
     destination_frags[0].text_id = TR_ALL;
-    destination_frags[0].parameter1 = 0;
+    destination_map[0] = 0;
 
     int product_count = 1;
     for (int i = RESOURCE_MIN; i < RESOURCE_MAX; i++) {
         product_frags[product_count].text = resource_get_data(i)->text;
-        product_frags[product_count].parameter1 = i;
+        product_map[product_count] = i;
         product_count++;
     }
 
@@ -170,13 +183,13 @@ static void init_filters(void)
     for (building *b = building_first_of_type(BUILDING_WAREHOUSE); b; b = b->next_of_type) {
         if (origin_count >= BUILDING_TYPE_MAX * 2) break;
         origin_frags[origin_count].text = (const uint8_t*)building_get_display_name(b);
-        origin_frags[origin_count].parameter1 = b->id;
+        origin_map[origin_count] = b->id;
         origin_count++;
     }
     for (building *b = building_first_of_type(BUILDING_GRANARY); b; b = b->next_of_type) {
         if (origin_count >= BUILDING_TYPE_MAX * 2) break;
         origin_frags[origin_count].text = (const uint8_t*)building_get_display_name(b);
-        origin_frags[origin_count].parameter1 = b->id;
+        origin_map[origin_count] = b->id;
         origin_count++;
     }
 
@@ -184,13 +197,13 @@ static void init_filters(void)
     for (building *b = building_first_of_type(BUILDING_WAREHOUSE); b; b = b->next_of_type) {
         if (destination_count >= BUILDING_TYPE_MAX * 2) break;
         destination_frags[destination_count].text = (const uint8_t*)building_get_display_name(b);
-        destination_frags[destination_count].parameter1 = b->id;
+        destination_map[destination_count] = b->id;
         destination_count++;
     }
     for (building *b = building_first_of_type(BUILDING_GRANARY); b; b = b->next_of_type) {
         if (destination_count >= BUILDING_TYPE_MAX * 2) break;
         destination_frags[destination_count].text = (const uint8_t*)building_get_display_name(b);
-        destination_frags[destination_count].parameter1 = b->id;
+        destination_map[destination_count] = b->id;
         destination_count++;
     }
 
@@ -208,24 +221,20 @@ static void populate_depot_list(void)
     array_clear(depot_list);
     for (building *b = building_first_of_type(BUILDING_DEPOT); b; b = b->next_of_type) {
         if (b->state == BUILDING_STATE_IN_USE) {
-            depot_info info;
-            info.building_id = b->id;
-            info.product_id = b->data.depot.current_order.resource_type;
-            info.source_id = b->data.depot.current_order.src_storage_id;
-            info.destination_id = b->data.depot.current_order.dst_storage_id;
-            array_add(depot_list, info);
+            depot_info *new_info = array_advance(depot_list);
+            if (new_info) {
+                new_info->building_id = b->id;
+                new_info->product_id = b->data.depot.current_order.resource_type;
+                new_info->source_id = b->data.depot.current_order.src_storage_id;
+                new_info->destination_id = b->data.depot.current_order.dst_storage_id;
+            }
         }
     }
 }
 
 void window_manage_depots_show(void)
 {
-    static bool filters_initialized = false;
-    if (!filters_initialized) {
-        init_filters();
-        filters_initialized = true;
-    }
-
+    init_filters();
     populate_depot_list();
     apply_filters();
 
