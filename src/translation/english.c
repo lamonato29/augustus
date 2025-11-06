@@ -22,6 +22,8 @@ static translation_string all_strings[] = {
     {TR_INVALID_LANGUAGE_MESSAGE,
         "The directory you selected does not contain a valid language pack. "
         "Please check the log for errors."},
+    {TR_MANAGE_DEPOTS, "Manage Cart Depots" },
+    {TR_ALL, "All" },
     {TR_AUTO_CYCLE_TEMPLES, "Auto cycle"},
     {TR_BUTTON_OK, "OK"},
     {TR_BUTTON_CANCEL, "Cancel"},

@@ -31,7 +31,8 @@ typedef enum {
     BUILD_MENU_GOV_RES = 23,
     BUILD_MENU_SHRINES = 24,
     BUILD_MENU_GARDENS = 25,
-    BUILD_MENU_MAX = 26
+    BUILD_MENU_DEPOT = 26,
+    BUILD_MENU_MAX = 27
 } build_menu_group;
 
 void building_menu_enable_all(void);
